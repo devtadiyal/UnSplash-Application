@@ -1,5 +1,6 @@
 package com.example.medcords
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -14,6 +15,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.main) as NavHostFragment
         val navController = navHostFragment.navController
+
     }
 
     //back button handling

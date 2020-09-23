@@ -20,6 +20,7 @@ import com.bumptech.glide.request.RequestListener
 import com.example.medcords.R
 import com.example.medcords.adapter.CustomAdapter
 import com.example.medcords.model.PhotosResponse
+import com.example.medcords.model.Result
 import com.example.medcords.utils.isConnectedToNetwork
 import com.example.medcords.viewmodel.AuthViewModelFactory
 import com.example.medcords.viewmodel.HomeViewModel
@@ -34,9 +35,8 @@ class HomeFragment : Fragment(), KodeinAware {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: CustomAdapter
-    private lateinit var photoDetails: PhotosResponse
     private var PAGE: Int = 1
-
+    private var allImageList = mutableListOf<Result>()
     //Kodein DI injecting factory class instance
     override val kodein by kodein()
     private val factory: AuthViewModelFactory by instance()
@@ -47,7 +47,6 @@ class HomeFragment : Fragment(), KodeinAware {
         savedInstanceState: Bundle?
     ): View? {
         var v: View = inflater.inflate(R.layout.fragment_home, container, false)
-
         homeViewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
         return v
     }
@@ -55,13 +54,12 @@ class HomeFragment : Fragment(), KodeinAware {
     //method to get photo list response from viewmodel and set to adpater
     private fun getPhotosList(page: Int) {
         homeViewModel.getPhotos(requireView(), page)
-        shimmer_view_genres.visibility= GONE
         shimmer_view_genres.stopShimmerAnimation()
         homeViewModel.getPhoto.observe(viewLifecycleOwner, Observer { photos ->
-            photoDetails = photos
+            allImageList.addAll(photos.results)
             linearLayoutManager = LinearLayoutManager(context)
             recycler_view_photos.layoutManager = linearLayoutManager
-            adapter = CustomAdapter(photos.results)
+            adapter = CustomAdapter(allImageList)
             recycler_view_photos.adapter = adapter
 
         })
@@ -81,7 +79,6 @@ class HomeFragment : Fragment(), KodeinAware {
                         target: com.bumptech.glide.request.target.Target<Drawable>?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        progress.visibility = GONE
                         return false
                     }
 
@@ -92,9 +89,7 @@ class HomeFragment : Fragment(), KodeinAware {
                         dataSource: DataSource?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        try {
-                            progress.visibility = GONE
-                        }catch (e:Exception){}
+
                         return false
                     }
                 })
@@ -112,12 +107,10 @@ class HomeFragment : Fragment(), KodeinAware {
             //method to get photos list
             getPhotosList(1)
             error_layout.visibility = GONE
-            swipeRefresh.visibility = VISIBLE
             frame.visibility = VISIBLE
         } else {
             error_layout.visibility = VISIBLE
             frame.visibility = GONE
-            shimmer_view_genres.visibility = GONE
             swipeRefresh.visibility = GONE
         }
 
@@ -133,7 +126,7 @@ class HomeFragment : Fragment(), KodeinAware {
             override fun onItemClicked(position: Int, view: View) {
                 //open details fragment
                 var direction =
-                    HomeFragmentDirections.actionHomeFragmentToDetailsFragment(photoDetails.results[position])
+                    HomeFragmentDirections.actionHomeFragmentToDetailsFragment(allImageList[position])
                 Navigation.findNavController(view)
                     .navigate(direction)
 
@@ -144,7 +137,6 @@ class HomeFragment : Fragment(), KodeinAware {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    shimmer_view_genres.startShimmerAnimation()
                     PAGE++
                     getPhotosList(PAGE)
 
@@ -173,13 +165,11 @@ class HomeFragment : Fragment(), KodeinAware {
     override fun onResume() {
         super.onResume()
         //shimmer start on resume
-        shimmer_view_genres.visibility= VISIBLE
         shimmer_view_genres.startShimmerAnimation()
     }
 
     override fun onPause() {
         //stopping shimmer
-        shimmer_view_genres.visibility= GONE
         shimmer_view_genres.stopShimmerAnimation()
         super.onPause()
     }
