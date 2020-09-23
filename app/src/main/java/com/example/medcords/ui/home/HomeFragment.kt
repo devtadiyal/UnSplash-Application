@@ -20,7 +20,6 @@ import com.bumptech.glide.request.RequestListener
 import com.example.medcords.R
 import com.example.medcords.adapter.CustomAdapter
 import com.example.medcords.model.PhotosResponse
-import com.example.medcords.model.Result
 import com.example.medcords.utils.isConnectedToNetwork
 import com.example.medcords.viewmodel.AuthViewModelFactory
 import com.example.medcords.viewmodel.HomeViewModel
@@ -35,8 +34,9 @@ class HomeFragment : Fragment(), KodeinAware {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: CustomAdapter
+    private lateinit var photoDetails: PhotosResponse
     private var PAGE: Int = 1
-    private var allImageList = mutableListOf<Result>()
+
     //Kodein DI injecting factory class instance
     override val kodein by kodein()
     private val factory: AuthViewModelFactory by instance()
@@ -56,10 +56,10 @@ class HomeFragment : Fragment(), KodeinAware {
         homeViewModel.getPhotos(requireView(), page)
         shimmer_view_genres.stopShimmerAnimation()
         homeViewModel.getPhoto.observe(viewLifecycleOwner, Observer { photos ->
-            allImageList.addAll(photos.results)
+            photoDetails = photos
             linearLayoutManager = LinearLayoutManager(context)
             recycler_view_photos.layoutManager = linearLayoutManager
-            adapter = CustomAdapter(allImageList)
+            adapter = CustomAdapter(photos.results)
             recycler_view_photos.adapter = adapter
 
         })
@@ -126,7 +126,7 @@ class HomeFragment : Fragment(), KodeinAware {
             override fun onItemClicked(position: Int, view: View) {
                 //open details fragment
                 var direction =
-                    HomeFragmentDirections.actionHomeFragmentToDetailsFragment(allImageList[position])
+                    HomeFragmentDirections.actionHomeFragmentToDetailsFragment(photoDetails.results[position])
                 Navigation.findNavController(view)
                     .navigate(direction)
 
