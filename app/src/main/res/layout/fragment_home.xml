@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:shimmer="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.medcords.viewmodel.HomeViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.home.HomeFragment">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_searchlogo"
+            android:scaleType="centerInside" />
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchBar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_toEndOf="@+id/logo"
+            android:animateLayoutChanges="true"
+            android:layoutDirection="rtl"
+            app:closeIcon="@drawable/ic_baseline_search_24"
+            app:defaultQueryHint="Search Images"
+            app:iconifiedByDefault="true"
+            app:queryBackground="@android:color/transparent"
+            app:queryHint="Search Images"
+            app:searchHintIcon="@null"
+            app:searchIcon="@drawable/ic_baseline_search_24" />
+
+        <FrameLayout
+            android:id="@+id/frame"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_below="@+id/searchBar">
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center" />
+
+            <ImageView
+                android:id="@+id/randomImage"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:scaleType="fitXY" />
+
+        </FrameLayout>
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_view_genres"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frame"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            shimmer:duration="800">
+
+            <!-- Adding 3 rows of placeholders -->
+            <LinearLayout
+                android:id="@+id/shimmer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/photo_shimmer" />
+
+                <include layout="@layout/photo_shimmer" />
+
+                <include layout="@layout/photo_shimmer" />
+
+            </LinearLayout>
+
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <com.example.medcords.utils.MySwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frame">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_photos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/list_photos" />
+
+        </com.example.medcords.utils.MySwipeRefreshLayout>
+
+
+        <LinearLayout
+            android:id="@+id/error_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/robotobold"
+                android:gravity="center"
+                android:text="@string/check_network"
+                android:textColor="@color/grey_light"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</layout>
