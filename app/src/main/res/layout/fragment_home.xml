@@ -6,7 +6,6 @@
 
     <data>
         <import type="android.view.View"/>
-
         <variable
             name="viewModel"
             type="com.example.medcords.viewmodel.HomeViewModel" />
@@ -63,43 +62,17 @@
 
         </FrameLayout>
 
-        <com.facebook.shimmer.ShimmerFrameLayout
-            android:id="@+id/shimmer_view_genres"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/frame"
-            android:orientation="vertical"
-            android:visibility="@{viewModel.shimmer ? View.VISIBLE : View.GONE}"
-            shimmer:duration="800">
-
-            <!-- Adding 3 rows of placeholders -->
-            <LinearLayout
-                android:id="@+id/shimmer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <include layout="@layout/photo_shimmer" />
-
-                <include layout="@layout/photo_shimmer" />
-
-                <include layout="@layout/photo_shimmer" />
-
-            </LinearLayout>
-
-
-        </com.facebook.shimmer.ShimmerFrameLayout>
-
         <com.example.medcords.utils.MySwipeRefreshLayout
             android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/frame">
 
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_photos"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 tools:listitem="@layout/list_photos" />
 
         </com.example.medcords.utils.MySwipeRefreshLayout>
@@ -125,7 +98,5 @@
                 android:visibility="visible" />
 
         </LinearLayout>
-
-
     </RelativeLayout>
 </layout>

@@ -9,6 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+
 interface Api {
 
     @GET("search/photos")
@@ -17,19 +18,20 @@ interface Api {
         @Query("client_id") client: String,
         @Query("page") page: Int,
         @Query("per_page") per_page: Int
-    ):PhotosResponse
+    ): PhotosResponse
 
     //send request for random image
     @GET("photos/random")
     suspend fun getRandomPhoto(
-        @Query("client_id") client: String): RandomPhotoResponse
+        @Query("client_id") client: String
+    ): RandomPhotoResponse
 
     companion object {
         operator fun invoke(): Api {
             // Interceptor to Log the Request
             val interceptor = HttpLoggingInterceptor()
             // Level.BODY prints Urls, Params and Response
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+            interceptor.level = HttpLoggingInterceptor.Level.BODY
             val okHttpClient =
                 OkHttpClient.Builder().addInterceptor(interceptor).build()
             return Retrofit.Builder()
