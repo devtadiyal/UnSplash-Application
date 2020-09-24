@@ -9,10 +9,11 @@ import com.example.medcords.paging.UserDataSource
 import com.example.medcords.paging.UserDataSourceFactory
 
 class UserViewModel : ViewModel() {
+    lateinit var itemDataSourceFactory :UserDataSourceFactory
     var userPagedList: LiveData<PagedList<Result>>
     private var liveDataSource: LiveData<UserDataSource>
     init {
-        val itemDataSourceFactory = UserDataSourceFactory()
+         itemDataSourceFactory = UserDataSourceFactory()
         liveDataSource = itemDataSourceFactory.userLiveDataSource
         val config = PagedList.Config.Builder()
             .setEnablePlaceholders(true)
@@ -20,5 +21,9 @@ class UserViewModel : ViewModel() {
             .build()
         userPagedList = LivePagedListBuilder(itemDataSourceFactory, config)
             .build()
+    }
+
+    fun refresh() {
+        itemDataSourceFactory.userLiveDataSource.getValue()?.invalidate()
     }
 }
