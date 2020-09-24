@@ -102,6 +102,7 @@ class HomeFragment : Fragment(), KodeinAware {
         //refresh data on pull list
         swipeRefresh.setOnRefreshListener {
             userViewModel.refresh()
+            swipeRefresh.isRefreshing = false
             // The method calls setRefreshing(false) when it's finished.
         }
 
