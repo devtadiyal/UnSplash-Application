@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,19 +16,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.request.RequestListener
 import com.example.medcords.R
-import com.example.medcords.adapter.CustomAdapter
 import com.example.medcords.adapter.UserAdapter
 import com.example.medcords.datastore.Preferences
-import com.example.medcords.model.PhotosResponse
 import com.example.medcords.model.Result
+import com.example.medcords.network.Resource
 import com.example.medcords.viewmodel.AuthViewModelFactory
 import com.example.medcords.viewmodel.HomeViewModel
 import com.example.medcords.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -60,46 +57,41 @@ class HomeFragment : Fragment(), KodeinAware {
 
     //method to get random photo response from viewmodel and load image url in glide
     private fun getRandomPhoto() {
-        homeViewModel.getRandomPhoto(requireView())
-        homeViewModel.getRandomPhoto.observe(viewLifecycleOwner, Observer { randomPhoto ->
+        //hit api
+        homeViewModel.getRandomPhoto()
+        //getting response from api
+        homeViewModel.getRandomPhoto.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is Resource.Success -> {
+                    //Glide handle image caching and image resizing by default
+                    Glide.with(requireContext()) //7
+                        .load(it?.value.urls?.regular)
+                        .listener(object : RequestListener<Drawable> { //9
+                            override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: com.bumptech.glide.request.target.Target<Drawable>?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                return false
+                            }
+                            override fun onResourceReady(
+                                resource: Drawable?,
+                                model: Any?,
+                                target: com.bumptech.glide.request.target.Target<Drawable>?,
+                                dataSource: DataSource?,
+                                isFirstResource: Boolean
+                            ): Boolean {
 
-            lifecycleScope.launch {
-                preferences.saveData("Dev singh tadiyal")
-            }
-
-          /*  when(randomPhoto){
-               is Resource.SUCCESS -> {
-
-               }
-                is Resource.FAILURE -> {
-
+                                return false
+                            }
+                        })
+                        .into(randomImage)
                 }
-
-            }*/
-            //Glide handle image caching and image resizing by default
-            Glide.with(requireContext()) //7
-                .load(randomPhoto?.urls?.regular)
-                .listener(object : RequestListener<Drawable> { //9
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: com.bumptech.glide.request.target.Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        return false
-                    }
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: com.bumptech.glide.request.target.Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-
-                        return false
-                    }
-                })
-                .into(randomImage)
+                is Resource.Failure -> {
+                    Toast.makeText(requireContext(), "Failure", Toast.LENGTH_SHORT).show()
+                }
+            }
         })
     }
 

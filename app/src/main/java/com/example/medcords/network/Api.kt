@@ -13,6 +13,7 @@ import retrofit2.http.Query
 
 interface Api {
 
+    //for pagination
     @GET("search/photos")
     fun getUsers( @Query("query") query: String,
                   @Query("client_id") client: String,
@@ -20,6 +21,7 @@ interface Api {
                   @Query("per_page") per_page: Int): Call<PhotosResponse>
 
 
+    //for simple list
     @GET("search/photos")
     suspend fun getPhotosList(
         @Query("query") query: String,

@@ -16,6 +16,9 @@ class SplashActivity : AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_splash)
+           /* val activity = if (it == null) AuthActivity::class.java else HomeActivity::class.java
+            startNewActivity(activity)
+        })*/
             Handler(Looper.getMainLooper()).postDelayed({
                     val i = Intent(this@SplashActivity, MainActivity::class.java)
                     startActivity(i)
