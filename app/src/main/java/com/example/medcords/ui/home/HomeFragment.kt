@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,16 +16,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.request.RequestListener
 import com.example.medcords.R
 import com.example.medcords.adapter.CustomAdapter
 import com.example.medcords.adapter.UserAdapter
+import com.example.medcords.datastore.Preferences
 import com.example.medcords.model.PhotosResponse
 import com.example.medcords.model.Result
 import com.example.medcords.viewmodel.AuthViewModelFactory
 import com.example.medcords.viewmodel.HomeViewModel
 import com.example.medcords.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -35,13 +39,12 @@ class HomeFragment : Fragment(), KodeinAware {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var userViewModel: UserViewModel
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var adapter: CustomAdapter
     private lateinit var photoDetails: PagedList<Result>
-    private var PAGE: Int = 1
 
     //Kodein DI injecting factory class instance
     override val kodein by kodein()
     private val factory: AuthViewModelFactory by instance()
+    private val preferences: Preferences by instance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,6 +62,20 @@ class HomeFragment : Fragment(), KodeinAware {
     private fun getRandomPhoto() {
         homeViewModel.getRandomPhoto(requireView())
         homeViewModel.getRandomPhoto.observe(viewLifecycleOwner, Observer { randomPhoto ->
+
+            lifecycleScope.launch {
+                preferences.saveData("Dev singh tadiyal")
+            }
+
+          /*  when(randomPhoto){
+               is Resource.SUCCESS -> {
+
+               }
+                is Resource.FAILURE -> {
+
+                }
+
+            }*/
             //Glide handle image caching and image resizing by default
             Glide.with(requireContext()) //7
                 .load(randomPhoto?.urls?.regular)

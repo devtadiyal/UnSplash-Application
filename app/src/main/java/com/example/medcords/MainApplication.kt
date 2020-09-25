@@ -1,6 +1,7 @@
 package com.example.medcords
 
 import android.app.Application
+import com.example.medcords.datastore.Preferences
 import com.example.medcords.model.Result
 import com.example.medcords.network.Api
 import com.example.medcords.repository.Repository
@@ -19,6 +20,7 @@ class MainApplication : Application(),KodeinAware{
         import(androidXModule(this@MainApplication))
         bind() from singleton { Api() }
         bind() from singleton { Repository(instance()) }
+        bind() from singleton { Preferences(instance()) }
         bind() from provider { AuthViewModelFactory(instance()) }
         bind() from provider { DetailsViewModelFactory(instance()) }
 

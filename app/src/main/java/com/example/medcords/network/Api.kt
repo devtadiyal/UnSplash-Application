@@ -4,6 +4,7 @@ import com.example.medcords.model.PhotosResponse
 import com.example.medcords.model.random.RandomPhotoResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -11,6 +12,13 @@ import retrofit2.http.Query
 
 
 interface Api {
+
+    @GET("search/photos")
+    fun getUsers( @Query("query") query: String,
+                  @Query("client_id") client: String,
+                  @Query("page") page: Int,
+                  @Query("per_page") per_page: Int): Call<PhotosResponse>
+
 
     @GET("search/photos")
     suspend fun getPhotosList(

@@ -4,14 +4,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import com.example.medcords.model.Result
 
-/**
- * Created by Morris on 03,June,2019
- */
-class UserDataSourceFactory : DataSource.Factory<Int, Result>() {
+
+class UserDataSourceFactory(private var city:String,private var client_id:String) : DataSource.Factory<Int, Result>() {
      val userLiveDataSource = MutableLiveData<UserDataSource>()
+
     override fun create(): DataSource<Int, Result> {
-        val userDataSource = UserDataSource()
+        val userDataSource = UserDataSource(city,client_id)
         userLiveDataSource.postValue(userDataSource)
         return userDataSource
     }
+
 }
