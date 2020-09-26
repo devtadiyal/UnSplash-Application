@@ -13,6 +13,7 @@
         <action
             android:id="@+id/action_homeFragment_to_detailsFragment"
             app:destination="@id/detailsFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/detailsFragment"
@@ -22,5 +23,22 @@
         <argument
             android:name="picDetails"
             app:argType="com.example.medcords.model.Result" />
+        <action
+            android:id="@+id/action_detailsFragment_to_clientFragment"
+            app:destination="@id/clientFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/clientFragment"
+        android:name="com.example.medcords.ui.serviceui.ClientFragment"
+        android:label="fragment_client"
+        tools:layout="@layout/fragment_client" >
+        <action
+            android:id="@+id/action_clientFragment_to_uploadFragment"
+            app:destination="@id/uploadFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/uploadFragment"
+        android:name="com.example.medcords.ui.workmanagerui.UploadFragment"
+        android:label="fragment_upload"
+        tools:layout="@layout/fragment_upload" />
 </navigation>

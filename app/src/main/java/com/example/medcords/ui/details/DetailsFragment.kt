@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import com.example.medcords.R
 import com.example.medcords.databinding.FragmentDetailsBinding
@@ -48,14 +49,17 @@ class DetailsFragment : Fragment() , KodeinAware{
         var details = DetailsFragmentArgs.fromBundle(requireArguments()).picDetails
         if(details!=null){
             //Glide handle image caching and image resizing by default
-            Glide.with(requireContext()).load(details?.urls?.regular).into(image)
+            Glide.with(requireContext()).load(details?.urls?.regular).into(locimage)
             placeName.setText("${details?.user?.location}")
             image_desc.setText("${details?.description+" "+details?.alt_description}")
             Glide.with(requireContext()).load(details?.user?.profile_image?.medium).into(userPic)
             name.setText("${details?.user?.name}")
-           
 
-        }
+
+            locimage.setOnClickListener {
+                    Navigation.findNavController(it).navigate(R.id.action_detailsFragment_to_clientFragment)                }
+
+            }
 
     }
 }

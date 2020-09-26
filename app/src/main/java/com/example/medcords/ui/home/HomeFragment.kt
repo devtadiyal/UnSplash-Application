@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,9 +27,11 @@ import com.example.medcords.viewmodel.AuthViewModelFactory
 import com.example.medcords.viewmodel.HomeViewModel
 import com.example.medcords.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
+import retrofit2.HttpException
 
 
 class HomeFragment : Fragment(), KodeinAware {
@@ -57,6 +60,9 @@ class HomeFragment : Fragment(), KodeinAware {
 
     //method to get random photo response from viewmodel and load image url in glide
     private fun getRandomPhoto() {
+        //saving data into jetpack datasource getting data in mainactivity class
+        lifecycleScope.launch { preferences.saveData("Data is saved in Jetpack Data Source") }
+
         //hit api
         homeViewModel.getRandomPhoto()
         //getting response from api
@@ -89,7 +95,14 @@ class HomeFragment : Fragment(), KodeinAware {
                         .into(randomImage)
                 }
                 is Resource.Failure -> {
-                    Toast.makeText(requireContext(), "Failure", Toast.LENGTH_SHORT).show()
+                    when(it){
+                        is HttpException -> {
+                            Resource.Failure(false, it.code(), it.response()?.errorBody())
+                        }
+                        else -> {
+                            Resource.Failure(true, null, null)
+                        }
+                    }
                 }
             }
         })
@@ -120,8 +133,7 @@ class HomeFragment : Fragment(), KodeinAware {
                 //open details fragment
                 var direction =
                     HomeFragmentDirections.actionHomeFragmentToDetailsFragment(photoDetails[position] as Result)
-                Navigation.findNavController(view)
-                    .navigate(direction)
+                    Navigation.findNavController(view).navigate(direction)
 
             }
         })
