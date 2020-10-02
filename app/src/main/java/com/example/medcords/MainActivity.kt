@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() , KodeinAware{
 
         //getting saved value of HomeFragment in MainActivity using DataStore
         preferences.token.asLiveData().observe(this, androidx.lifecycle.Observer {
-            Toast.makeText(this, it ?: "value is null", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, it ?: "value is null", Toast.LENGTH_SHORT).show()
         })
     }
 

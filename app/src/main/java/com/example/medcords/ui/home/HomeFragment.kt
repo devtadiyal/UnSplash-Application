@@ -44,7 +44,6 @@ class HomeFragment : Fragment(), KodeinAware {
     //Kodein DI injecting factory class instance
     override val kodein by kodein()
     private val factory: AuthViewModelFactory by instance()
-    private val preferences: Preferences by instance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,7 +60,7 @@ class HomeFragment : Fragment(), KodeinAware {
     //method to get random photo response from viewmodel and load image url in glide
     private fun getRandomPhoto() {
         //saving data into jetpack datasource getting data in mainactivity class
-        lifecycleScope.launch { preferences.saveData("Data is saved in Jetpack Data Source") }
+      //  lifecycleScope.launch { preferences.saveData("Data is saved in Jetpack Data Source") }
 
         //hit api
         homeViewModel.getRandomPhoto()
@@ -115,10 +114,13 @@ class HomeFragment : Fragment(), KodeinAware {
         val userAdapter = UserAdapter()
         linearLayoutManager = LinearLayoutManager(context)
         recycler_view_photos.layoutManager = linearLayoutManager
+
         userViewModel.userPagedList.observe(requireActivity(), Observer {
             photoDetails = it
             userAdapter.submitList(it)
+
         })
+
         recycler_view_photos.adapter = userAdapter
 
         //refresh data on pull list

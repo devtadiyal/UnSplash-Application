@@ -13,22 +13,12 @@ import retrofit2.http.Query
 
 interface Api {
 
-    //for pagination
+    // google paging library added to handle
     @GET("search/photos")
-    fun getUsers( @Query("query") query: String,
+    fun getPagingPhotos( @Query("query") query: String,
                   @Query("client_id") client: String,
                   @Query("page") page: Int,
                   @Query("per_page") per_page: Int): Call<PhotosResponse>
-
-
-    //for simple list
-    @GET("search/photos")
-    suspend fun getPhotosList(
-        @Query("query") query: String,
-        @Query("client_id") client: String,
-        @Query("page") page: Int,
-        @Query("per_page") per_page: Int
-    ): PhotosResponse
 
     //send request for random image
     @GET("photos/random")
@@ -52,4 +42,13 @@ interface Api {
                 .create(Api::class.java)
         }
     }
+
+    //without paging handling list
+    @GET("search/photos")
+    suspend fun getPhotosList(
+        @Query("query") query: String,
+        @Query("client_id") client: String,
+        @Query("page") page: Int,
+        @Query("per_page") per_page: Int
+    ): PhotosResponse
 }

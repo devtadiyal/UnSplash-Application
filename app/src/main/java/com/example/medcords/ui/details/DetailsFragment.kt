@@ -57,7 +57,8 @@ class DetailsFragment : Fragment() , KodeinAware{
 
 
             locimage.setOnClickListener {
-                    Navigation.findNavController(it).navigate(R.id.action_detailsFragment_to_clientFragment)                }
+                  //  Navigation.findNavController(it).navigate(R.id.action_detailsFragment_to_clientFragment)
+                }
 
             }
 

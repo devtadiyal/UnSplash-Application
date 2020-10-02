@@ -13,7 +13,7 @@ import retrofit2.Response
 class UserDataSource(private var city:String,private var client_id:String) : PageKeyedDataSource<Int, Result>() {
   override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Result>) {
     val service = ApiServiceBuilder.buildService(Api::class.java)
-    val call = service.getUsers(city,client_id,params.key,PAGE_SIZE)
+    val call = service.getPagingPhotos(city,client_id,params.key,PAGE_SIZE)
     call.enqueue(object : Callback<PhotosResponse> {
       override fun onResponse(call: Call<PhotosResponse>, response: Response<PhotosResponse>) {
         if (response.isSuccessful) {
@@ -31,7 +31,7 @@ class UserDataSource(private var city:String,private var client_id:String) : Pag
   }
   override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Result>) {
     val service = ApiServiceBuilder.buildService(Api::class.java)
-    val call = service.getUsers(city,client_id,
+    val call = service.getPagingPhotos(city,client_id,
       FIRST_PAGE,PAGE_SIZE)
     call.enqueue(object : Callback<PhotosResponse> {
       override fun onResponse(call: Call<PhotosResponse>, response: Response<PhotosResponse>) {
@@ -49,7 +49,7 @@ class UserDataSource(private var city:String,private var client_id:String) : Pag
   }
   override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Result>) {
     val service = ApiServiceBuilder.buildService(Api::class.java)
-    val call = service.getUsers(city,client_id,params.key,PAGE_SIZE)
+    val call = service.getPagingPhotos(city,client_id,params.key,PAGE_SIZE)
     call.enqueue(object : Callback<PhotosResponse> {
       override fun onResponse(call: Call<PhotosResponse>, response: Response<PhotosResponse>) {
         if (response.isSuccessful) {
