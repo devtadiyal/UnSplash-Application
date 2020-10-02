@@ -11,7 +11,7 @@ import com.example.medcords.R
 import com.example.medcords.model.Result
 import kotlinx.android.synthetic.main.list_photos.view.*
 
-class UserAdapter : PagedListAdapter<Result, UserAdapter.UserViewHolder>(USER_COMPARATOR) {
+class PhotoAdapter : PagedListAdapter<Result, PhotoAdapter.UserViewHolder>(USER_COMPARATOR) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.list_photos, parent, false)

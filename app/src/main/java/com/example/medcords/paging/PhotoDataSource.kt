@@ -10,7 +10,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class UserDataSource(private var city:String,private var client_id:String) : PageKeyedDataSource<Int, Result>() {
+class PhotoDataSource(private var city:String, private var client_id:String) : PageKeyedDataSource<Int, Result>() {
   override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Result>) {
     val service = ApiServiceBuilder.buildService(Api::class.java)
     val call = service.getPagingPhotos(city,client_id,params.key,PAGE_SIZE)

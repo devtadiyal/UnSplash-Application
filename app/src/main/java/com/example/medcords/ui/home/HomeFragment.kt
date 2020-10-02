@@ -2,14 +2,15 @@ package com.example.medcords.ui.home
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,15 +20,13 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.example.medcords.R
-import com.example.medcords.adapter.UserAdapter
-import com.example.medcords.datastore.Preferences
+import com.example.medcords.adapter.PhotoAdapter
 import com.example.medcords.model.Result
 import com.example.medcords.network.Resource
 import com.example.medcords.viewmodel.AuthViewModelFactory
 import com.example.medcords.viewmodel.HomeViewModel
-import com.example.medcords.viewmodel.UserViewModel
+import com.example.medcords.viewmodel.PhotoViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -37,7 +36,7 @@ import retrofit2.HttpException
 class HomeFragment : Fragment(), KodeinAware {
 
     private lateinit var homeViewModel: HomeViewModel
-    private lateinit var userViewModel: UserViewModel
+    private lateinit var photoViewModel: PhotoViewModel
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var photoDetails: PagedList<Result>
 
@@ -52,16 +51,14 @@ class HomeFragment : Fragment(), KodeinAware {
     ): View? {
         var v: View = inflater.inflate(R.layout.fragment_home, container, false)
         homeViewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-
+        photoViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
         return v
     }
 
     //method to get random photo response from viewmodel and load image url in glide
     private fun getRandomPhoto() {
         //saving data into jetpack datasource getting data in mainactivity class
-      //  lifecycleScope.launch { preferences.saveData("Data is saved in Jetpack Data Source") }
-
+        //  lifecycleScope.launch { preferences.saveData("Data is saved in Jetpack Data Source") }
         //hit api
         homeViewModel.getRandomPhoto()
         //getting response from api
@@ -70,7 +67,7 @@ class HomeFragment : Fragment(), KodeinAware {
                 is Resource.Success -> {
                     //Glide handle image caching and image resizing by default
                     Glide.with(requireContext()) //7
-                        .load(it?.value.urls?.regular)
+                        .load(it.value.urls.regular)
                         .listener(object : RequestListener<Drawable> { //9
                             override fun onLoadFailed(
                                 e: GlideException?,
@@ -80,6 +77,7 @@ class HomeFragment : Fragment(), KodeinAware {
                             ): Boolean {
                                 return false
                             }
+
                             override fun onResourceReady(
                                 resource: Drawable?,
                                 model: Any?,
@@ -87,14 +85,13 @@ class HomeFragment : Fragment(), KodeinAware {
                                 dataSource: DataSource?,
                                 isFirstResource: Boolean
                             ): Boolean {
-
                                 return false
                             }
                         })
                         .into(randomImage)
                 }
                 is Resource.Failure -> {
-                    when(it){
+                    when (it) {
                         is HttpException -> {
                             Resource.Failure(false, it.code(), it.response()?.errorBody())
                         }
@@ -110,23 +107,33 @@ class HomeFragment : Fragment(), KodeinAware {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        //call random photo api method
         getRandomPhoto()
-        val userAdapter = UserAdapter()
-        linearLayoutManager = LinearLayoutManager(context)
-        recycler_view_photos.layoutManager = linearLayoutManager
 
-        userViewModel.userPagedList.observe(requireActivity(), Observer {
-            photoDetails = it
-            userAdapter.submitList(it)
+        //shimmer for photos list
+        shimmer_pics_list.visibility = View.VISIBLE
+        shimmer_pics_list.startShimmerAnimation()
 
-        })
-
-        recycler_view_photos.adapter = userAdapter
+        Handler(Looper.getMainLooper()).postDelayed({
+            shimmer_pics_list.stopShimmerAnimation()
+            shimmer_pics_list.visibility = View.GONE
+            //get photos list
+            loadPhotosList()
+        },5000)
 
         //refresh data on pull list
         swipeRefresh.setOnRefreshListener {
-            userViewModel.refresh()
+            //shimmer for photos list
+            shimmer_pics_list.visibility = View.VISIBLE
+            shimmer_pics_list.startShimmerAnimation()
+            photoViewModel.refresh()
             swipeRefresh.isRefreshing = false
+            Handler(Looper.getMainLooper()).postDelayed({
+                shimmer_pics_list.stopShimmerAnimation()
+                shimmer_pics_list.visibility = View.GONE
+
+            },2000)
+
             // The method calls setRefreshing(false) when it's finished.
         }
 
@@ -135,10 +142,25 @@ class HomeFragment : Fragment(), KodeinAware {
                 //open details fragment
                 var direction =
                     HomeFragmentDirections.actionHomeFragmentToDetailsFragment(photoDetails[position] as Result)
-                    Navigation.findNavController(view).navigate(direction)
-
+                Navigation.findNavController(view).navigate(direction)
             }
         })
+    }
+
+
+    fun loadPhotosList() {
+        //adapter of list
+        val userAdapter = PhotoAdapter()
+        linearLayoutManager = LinearLayoutManager(context)
+        recycler_view_photos.layoutManager = linearLayoutManager
+
+        photoViewModel.userPagedList.observe(requireActivity(), Observer {
+            if (it != null) {
+                photoDetails = it
+                userAdapter.submitList(it)
+            }
+        })
+        recycler_view_photos.adapter = userAdapter
     }
 
 
@@ -158,7 +180,6 @@ class HomeFragment : Fragment(), KodeinAware {
             }
         })
     }
-
 
     interface OnItemClickListener {
         fun onItemClicked(position: Int, view: View)

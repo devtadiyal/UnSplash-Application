@@ -11,6 +11,7 @@
         <variable
             name="viewModel"
             type="com.example.medcords.viewmodel.HomeViewModel" />
+
     </data>
 
     <RelativeLayout
@@ -80,8 +81,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginRight="16dp"
-            android:visibility="gone"
             android:orientation="vertical"
+            android:visibility="gone"
             shimmer:duration="800">
 
             <LinearLayout
