@@ -44,12 +44,8 @@ class HomeFragment : Fragment(), KodeinAware {
     override val kodein by kodein()
     private val factory: AuthViewModelFactory by instance()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        var v: View = inflater.inflate(R.layout.fragment_home, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        var v: View = inflater.inflate(R.layout.home_fragment, container, false)
         homeViewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
         photoViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
         return v
@@ -126,15 +122,15 @@ class HomeFragment : Fragment(), KodeinAware {
             //shimmer for photos list
             shimmer_pics_list.visibility = View.VISIBLE
             shimmer_pics_list.startShimmerAnimation()
+            // The method calls setRefreshing(false) when it's finished.
             photoViewModel.refresh()
             swipeRefresh.isRefreshing = false
             Handler(Looper.getMainLooper()).postDelayed({
                 shimmer_pics_list.stopShimmerAnimation()
                 shimmer_pics_list.visibility = View.GONE
 
-            },2000)
+            },3500)
 
-            // The method calls setRefreshing(false) when it's finished.
         }
 
         recycler_view_photos.addOnItemClickListener(object : OnItemClickListener {
@@ -163,7 +159,6 @@ class HomeFragment : Fragment(), KodeinAware {
         recycler_view_photos.adapter = userAdapter
     }
 
-
     //recyclerview item listener
     fun RecyclerView.addOnItemClickListener(onClickListener: OnItemClickListener) {
         this.addOnChildAttachStateChangeListener(object :
@@ -184,6 +179,4 @@ class HomeFragment : Fragment(), KodeinAware {
     interface OnItemClickListener {
         fun onItemClicked(position: Int, view: View)
     }
-
-
 }
